@@ -1,10 +1,8 @@
 package controller;
 
-// import javax.swing.JOptionPane;
-
 import view.LoginView;
 import view.RegisterView;
-import view.TaskListView;
+import view.CardListView;
 
 public class LoginController {
 
@@ -15,8 +13,7 @@ public class LoginController {
     }
 
     public void onLoginButtonClick() {
-        // JOptionPane.showMessageDialog(loginView, "Login successful");
-        TaskListView taskListView = new TaskListView();
+        CardListView taskListView = new CardListView();
         taskListView.setVisible(true);
 
         loginView.dispose();

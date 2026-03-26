@@ -1,5 +1,4 @@
 package dao;
-import java.util.Optional;
 import model.*;
 
 public interface UserDaoInterface {
