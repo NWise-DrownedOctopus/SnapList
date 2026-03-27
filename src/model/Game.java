@@ -1,0 +1,5 @@
+package model;
+
+public enum Game {
+    MTG, POKEMON, LORCANA, RIFTBOUND, ONEPIECE, YUGIOH, UNIONARENA, GUNADAM
+}

@@ -1,9 +1,14 @@
 package view;
 
+import model.Card;
+
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+
+import controller.AddUpdateCardController;
 import controller.CardListController;
+import dao.CardDaoImplementation;
 
 public class CardListView extends JFrame {
     private JComboBox<String> cmbGame = new JComboBox<>(
@@ -30,6 +35,7 @@ public class CardListView extends JFrame {
     private JLabel lblCash = new JLabel("Cash Offer: $0.00");
 
     private CardListController controller;
+    private CardDaoImplementation dao = new CardDaoImplementation();
 
     public CardListView() {
         controller = new CardListController(this);
@@ -66,6 +72,8 @@ public class CardListView extends JFrame {
         setResizable(true);
         pack();
         setLocationRelativeTo(null);
+
+        refreshTable();
     }
 
     private void buildUI() {
@@ -125,9 +133,46 @@ public class CardListView extends JFrame {
 
         add(bottomContainer, BorderLayout.SOUTH);
     }
+    // TICKET:: Shop quantity would need to hook up to some sort of internal storage system that would allow the user to manage their card inventory
+    //          For now I have it at 0, but ideally I could set up an inventory system, and then allow this to pull data from that to manage that state.
+
+    // TICKET:: Printing is still not fully implemented, because it will relly on the db to pull print information that is avalible for a card, for now
+    //          it has a default (normal) print set as a placeholder
+
+    // TICKET:: Market price should be updated and stored locally, but the process of pulling that data from online and chaching isn't implemented, so $0 is a placeholder for now
+
+    // TICKET:: QTY should be updated as the user adds entries to the table, they should be able to specify how many of the card should be added to the list, but without having multiple entries
+    //          in the table
+
+    // Updates the view of the table to reflect the data from the dao
+    public void refreshTable() {
+        DefaultTableModel model = (DefaultTableModel) tblTasks.getModel();
+        model.setRowCount(0); // clear current rows
+
+        int counter = 1;
+        for (Card card : dao.findAll()) {
+            model.addRow(new Object[] {
+                    counter++,
+                    0, // placeholder shop quantity
+                    card.getGame(),
+                    card.getName(),
+                    card.getSet(),
+                    card.getCondition(),
+                    "Normal", // placeholder printing
+                    card.getLanguage(),
+                    1, // placeholder quantity
+                    0.0 // placeholder market price
+            });
+        }
+    }
 
     private void addActionListeners() {
-        btnAdd.addActionListener(e -> controller.onAddButtonClick());
+        btnAdd.addActionListener(e -> {
+            AddUpdateCardView dialog = new AddUpdateCardView(this);
+            new AddUpdateCardController(dialog, dao);
+            dialog.setVisible(true);
+            refreshTable(); // update the main table
+        });
         btnEdit.addActionListener(e -> controller.onEditButtonClick());
         btnDelete.addActionListener(e -> controller.onDeleteButtonClick());
         btnSubmit.addActionListener(e -> controller.onSubmitButtonClick());

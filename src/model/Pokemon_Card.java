@@ -7,8 +7,8 @@ enum Printing {
 public class Pokemon_Card extends Card {
     private Printing printing;
 
-    public Pokemon_Card(String name, Game game, String set, String language, Condition condition, Printing printing) {
-        super(name, game, set, language, condition);
+    public Pokemon_Card(Long id, String name, Game game, String set, Language language, Condition condition, Printing printing) {
+        super(id, name, game, set, language, condition);
         this.printing = printing;
     }
 

@@ -1,18 +1,14 @@
 package model;
 
-enum Printing {
-    normal, extended_art, borderless, showcase
-}
-
 public class Mtg_Card extends Card {
-    private Printing printing;
+    private MTG_Printing printing;
 
-    public Mtg_Card(String name, Game game, String set, String language, Condition condition, Printing printing) {
-        super(name, game, set, language, condition);
+    public Mtg_Card(Long id, String name, Game game, String set, Language language, Condition condition, MTG_Printing printing) {
+        super(id, name, game, set, language, condition);
         this.printing = printing;
     }
 
-    public Printing getPrinting() {
+    public MTG_Printing getPrinting() {
         return printing;
     }
 }
