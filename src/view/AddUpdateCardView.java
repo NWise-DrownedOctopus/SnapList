@@ -9,11 +9,13 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
 import model.Condition;
+import model.Language;
+import model.Card;
 
 public class AddUpdateCardView extends JDialog {
     private JComboBox<String> cmbSet = new JComboBox<>(new String[] { "Lorwyn Eclipsed", "Final Fantasy", "Edge of Eternities" });
     private JTextField txtName = new JTextField(30);
-    private JComboBox<String> cmbLanguage = new JComboBox<>(new String[] { "English", "Japanese", "Korean", "Spanish", "Russian", "German", "French" });
+    private JComboBox<Language> cmbLanguage = new JComboBox<>(Language.values());
 
     private JRadioButton btnNM = new JRadioButton("NM");
     private JRadioButton btnLP = new JRadioButton("LP");
@@ -111,8 +113,14 @@ public class AddUpdateCardView extends JDialog {
     // ---- Getters for controller ----
     public String getCardName() { return txtName.getText().trim(); }
     public String getSelectedSet() { return (String) cmbSet.getSelectedItem(); }
-    public String getSelectedLanguage() { return (String) cmbLanguage.getSelectedItem(); }
-    public String getQuantity() { return txtQuantity.getText().trim(); }
+    
+    public int getQuantity() {
+        try {
+            return Integer.parseInt(txtQuantity.getText().trim());
+        } catch (NumberFormatException e) {
+            return 0;
+        }
+    }
 
     public Condition getSelectedCondition() {
         if (btnNM.isSelected()) return Condition.NM;
@@ -121,6 +129,23 @@ public class AddUpdateCardView extends JDialog {
         if (btnHP.isSelected()) return Condition.HP;
         if (btnDG.isSelected()) return Condition.DG;
         return Condition.NM;
+    }
+
+    public Language getSelectedLanguage() {
+        return (Language) cmbLanguage.getSelectedItem();
+    }
+
+    public void populateFields(Card card) {
+        txtName.setText(card.getName());
+        cmbSet.setSelectedItem(card.getSet());
+        cmbLanguage.setSelectedItem(card.getLanguage());
+        switch (card.getCondition()) {
+            case NM -> btnNM.setSelected(true);
+            case LP -> btnLP.setSelected(true);
+            case MP -> btnMP.setSelected(true);
+            case HP -> btnHP.setSelected(true);
+            case DG -> btnDG.setSelected(true);
+        }
     }
 
     public JButton getBtnSave() { return btnSave; }

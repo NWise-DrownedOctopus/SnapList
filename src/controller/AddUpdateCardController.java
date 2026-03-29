@@ -14,10 +14,21 @@ import javax.swing.*;
 public class AddUpdateCardController {
     private AddUpdateCardView view;
     private CardDaoImplementation dao;
+    private Card editingCard;
+    JComboBox<Language> cmbLanguage = new JComboBox<>(Language.values());
 
-    public AddUpdateCardController(AddUpdateCardView view, CardDaoImplementation dao) {
+    public AddUpdateCardController(AddUpdateCardView view, CardDaoImplementation dao, Card card) {
         this.view = view;
         this.dao = dao;
+        this.editingCard = card;
+
+        if (card != null) {
+            view.populateFields(card);
+            view.setTitle("Edit Card");
+        }
+        else {
+            view.setTitle("Add New Card");
+        }
         initController();
     }
 
@@ -32,18 +43,14 @@ public class AddUpdateCardController {
                 throw new Exception("Name cannot be empty");
 
             String set = view.getSelectedSet();
-            String langStr = view.getSelectedLanguage();
-            Language language = Language.valueOf(langStr.toUpperCase());
+            Language language = view.getSelectedLanguage();
 
             Condition condition = view.getSelectedCondition();
 
-            int quantity;
-            try {
-                quantity = Integer.parseInt(view.getQuantity());
-                if (quantity < 1)
-                    throw new Exception("Quantity must be at least 1");
-            } catch (NumberFormatException e) {
-                throw new Exception("Quantity must be a number");
+            int quantity = view.getQuantity();
+
+            if (quantity < 1) {
+                throw new Exception("Quantity must be at least 1");
             }
 
             
@@ -53,12 +60,26 @@ public class AddUpdateCardController {
             //          for now card bellow is getting default (normal) printing
 
             // Create new card (example MTG card)
-            Card newCard = new Mtg_Card(null, name, Game.MTG, set, language, condition, MTG_Printing.normal);
+            if (editingCard != null) {
+                // 🔁 EDIT MODE
+                editingCard.setName(name);
+                editingCard.setSet(set);
+                editingCard.setLanguage(language);
+                editingCard.setCondition(condition);
 
-            dao.insertCard(newCard);
+                dao.update(editingCard);
 
-            JOptionPane.showMessageDialog(view, "Card added successfully!");
+                JOptionPane.showMessageDialog(view, "Card updated successfully!");
+            } else {
+                // ➕ ADD MODE
+                Card newCard = new Mtg_Card(null, name, Game.MTG, set, language, condition, MTG_Printing.normal);
+                dao.insertCard(newCard);
+
+                JOptionPane.showMessageDialog(view, "Card added successfully!");
+            }
+
             view.dispose(); // close dialog
+
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(view, "Error: " + ex.getMessage(), "Input Error", JOptionPane.ERROR_MESSAGE);
         }

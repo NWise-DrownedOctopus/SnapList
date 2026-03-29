@@ -22,6 +22,7 @@ public class CardListView extends JFrame {
     private JButton btnDG = new JButton("DG");
 
     private JTable tblTasks;
+    private java.util.List<Card> currentCards = new java.util.ArrayList<>();
 
     private JButton btnAdd = new JButton("Add");
     private JButton btnEdit = new JButton("Edit");
@@ -149,6 +150,9 @@ public class CardListView extends JFrame {
         DefaultTableModel model = (DefaultTableModel) tblTasks.getModel();
         model.setRowCount(0); // clear current rows
 
+        // Stores acurate list of cards that are stored in the DAO
+        currentCards = dao.findAll();
+
         int counter = 1;
         for (Card card : dao.findAll()) {
             model.addRow(new Object[] {
@@ -167,12 +171,16 @@ public class CardListView extends JFrame {
     }
 
     private void addActionListeners() {
+        // Add card entry
         btnAdd.addActionListener(e -> {
             AddUpdateCardView dialog = new AddUpdateCardView(this);
-            new AddUpdateCardController(dialog, dao);
+            new AddUpdateCardController(dialog, dao, null);
             dialog.setVisible(true);
             refreshTable(); // update the main table
         });
+
+
+        // Update card entry
         btnEdit.addActionListener(e -> {
             int selectedRow = tblTasks.getSelectedRow();
 
@@ -180,17 +188,17 @@ public class CardListView extends JFrame {
                 JOptionPane.showMessageDialog(this, "Please select a card entry to edit");
                 return;
             }
-            else {
-                AddUpdateCardView dialog = new AddUpdateCardView(this);
-                new AddUpdateCardController(dialog, dao);
-                dialog.setVisible(true);
-                refreshTable();
-            }
-            
+
+            Card selectedCard = currentCards.get(selectedRow);
+
+            AddUpdateCardView dialog = new AddUpdateCardView(this);
+            new AddUpdateCardController(dialog, dao, selectedCard);
+
+            dialog.setVisible(true);
+            refreshTable();
         });
 
-        // Delete card  entry
-        // Ticket:: Only delets in UI, need to also remove via DAO
+        // Delete card entry
         btnDelete.addActionListener(e -> {
             int selectedRow = tblTasks.getSelectedRow();
 
@@ -198,11 +206,17 @@ public class CardListView extends JFrame {
                 JOptionPane.showMessageDialog(this, "Please select a card entry to delete");
                 return;
             }
-            else {
-                DefaultTableModel model = (DefaultTableModel) tblTasks.getModel();
-                model.removeRow(selectedRow);
-            }
+
+            // Get the actual Card object
+            Card selectedCard = currentCards.get(selectedRow);
+
+            // Delete using its real ID
+            dao.delete(selectedCard.getId());
+
+            refreshTable();
         });
+
+        // Ticket:: Currently a place holder, this would be used to submit list to add list of cards to shops inventory
         btnSubmit.addActionListener(e -> controller.onSubmitButtonClick());
     }
 
