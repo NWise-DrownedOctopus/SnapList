@@ -173,8 +173,36 @@ public class CardListView extends JFrame {
             dialog.setVisible(true);
             refreshTable(); // update the main table
         });
-        btnEdit.addActionListener(e -> controller.onEditButtonClick());
-        btnDelete.addActionListener(e -> controller.onDeleteButtonClick());
+        btnEdit.addActionListener(e -> {
+            int selectedRow = tblTasks.getSelectedRow();
+
+            if (selectedRow == -1) {
+                JOptionPane.showMessageDialog(this, "Please select a card entry to edit");
+                return;
+            }
+            else {
+                AddUpdateCardView dialog = new AddUpdateCardView(this);
+                new AddUpdateCardController(dialog, dao);
+                dialog.setVisible(true);
+                refreshTable();
+            }
+            
+        });
+
+        // Delete card  entry
+        // Ticket:: Only delets in UI, need to also remove via DAO
+        btnDelete.addActionListener(e -> {
+            int selectedRow = tblTasks.getSelectedRow();
+
+            if (selectedRow == -1) {
+                JOptionPane.showMessageDialog(this, "Please select a card entry to delete");
+                return;
+            }
+            else {
+                DefaultTableModel model = (DefaultTableModel) tblTasks.getModel();
+                model.removeRow(selectedRow);
+            }
+        });
         btnSubmit.addActionListener(e -> controller.onSubmitButtonClick());
     }
 
