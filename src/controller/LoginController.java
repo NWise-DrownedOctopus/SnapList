@@ -1,29 +1,29 @@
-package controller;
+// package controller;
 
-import view.LoginView;
-import view.RegisterView;
-import view.CardListView;
+// import view.LoginView;
+// import view.RegisterView;
+// import view.CardListView;
 
-public class LoginController {
+// public class LoginController {
 
-    LoginView loginView;
+//     LoginView loginView;
 
-    public LoginController(LoginView loginView) {
-        this.loginView = loginView;
-    }
+//     public LoginController(LoginView loginView) {
+//         this.loginView = loginView;
+//     }
 
-    public void onLoginButtonClick() {
-        CardListView taskListView = new CardListView();
-        taskListView.setVisible(true);
+//     // public void onLoginButtonClick() {
+//     //     CardListView taskListView = new CardListView();
+//     //     taskListView.setVisible(true);
 
-        loginView.dispose();
-    }
+//     //     loginView.dispose();
+//     // }
 
-    public void onRegisterButtonClick() {
+//     public void onRegisterButtonClick() {
 
-        RegisterView registerView = new RegisterView();
-        registerView.setVisible(true);
+//         RegisterView registerView = new RegisterView();
+//         registerView.setVisible(true);
 
-        loginView.dispose();
-    }
-}
+//         loginView.dispose();
+//     }
+// }

@@ -6,9 +6,7 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 
-import controller.AddUpdateCardController;
 import controller.CardListController;
-import dao.CardDaoImplementation;
 
 public class CardListView extends JFrame {
     private JComboBox<String> cmbGame = new JComboBox<>(
@@ -36,10 +34,9 @@ public class CardListView extends JFrame {
     private JLabel lblCash = new JLabel("Cash Offer: $0.00");
 
     private CardListController controller;
-    private CardDaoImplementation dao = new CardDaoImplementation();
 
-    public CardListView() {
-        controller = new CardListController(this);
+    public CardListView(CardListController controller) {
+        this.controller = controller;
 
         setTitle("Snap List - Untitled Project");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -151,10 +148,10 @@ public class CardListView extends JFrame {
         model.setRowCount(0); // clear current rows
 
         // Stores acurate list of cards that are stored in the DAO
-        currentCards = dao.findAll();
+        currentCards = controller.getAllCards();
 
         int counter = 1;
-        for (Card card : dao.findAll()) {
+        for (Card card : currentCards) {
             model.addRow(new Object[] {
                     counter++,
                     0, // placeholder shop quantity
@@ -174,7 +171,7 @@ public class CardListView extends JFrame {
         // Add card entry
         btnAdd.addActionListener(e -> {
             AddUpdateCardView dialog = new AddUpdateCardView(this);
-            new AddUpdateCardController(dialog, dao, null);
+            controller.openAddDialog();
             dialog.setVisible(true);
             refreshTable(); // update the main table
         });
@@ -192,7 +189,7 @@ public class CardListView extends JFrame {
             Card selectedCard = currentCards.get(selectedRow);
 
             AddUpdateCardView dialog = new AddUpdateCardView(this);
-            new AddUpdateCardController(dialog, dao, selectedCard);
+            controller.openEditDialog(selectedCard);
 
             dialog.setVisible(true);
             refreshTable();
@@ -211,7 +208,7 @@ public class CardListView extends JFrame {
             Card selectedCard = currentCards.get(selectedRow);
 
             // Delete using its real ID
-            dao.delete(selectedCard.getId());
+            controller.deleteCard(selectedCard.getId());
 
             refreshTable();
         });

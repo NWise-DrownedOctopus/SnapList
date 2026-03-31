@@ -1,25 +1,25 @@
-package controller;
+// package controller;
 
-import javax.swing.JOptionPane;
+// import javax.swing.JOptionPane;
 
-import view.LoginView;
-import view.RegisterView;
+// import view.LoginView;
+// import view.RegisterView;
 
-public class RegisterController {
+// public class RegisterController {
     
-    RegisterView registerView;
+//     RegisterView registerView;
 
-    public RegisterController(RegisterView registerView) {
-        this.registerView = registerView;
-    }
+//     public RegisterController(RegisterView registerView) {
+//         this.registerView = registerView;
+//     }
 
-    public void onRegisterButtonClick() {
-        JOptionPane.showMessageDialog(registerView, "Registration Sucessful");
-    }
+//     public void onRegisterButtonClick() {
+//         JOptionPane.showMessageDialog(registerView, "Registration Sucessful");
+//     }
 
-    public void onLoginButtonClick() {
-        LoginView loginView = new LoginView();
-        loginView.setVisible(true);
-        registerView.dispose();
-    }
-}
+//     public void onLoginButtonClick() {
+//         LoginView loginView = new LoginView();
+//         loginView.setVisible(true);
+//         registerView.dispose();
+//     }
+// }
