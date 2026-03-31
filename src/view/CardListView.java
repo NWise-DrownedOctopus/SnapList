@@ -6,6 +6,7 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 
+import controller.AddUpdateCardController;
 import controller.CardListController;
 
 public class CardListView extends JFrame {
@@ -170,29 +171,22 @@ public class CardListView extends JFrame {
     private void addActionListeners() {
         // Add card entry
         btnAdd.addActionListener(e -> {
-            AddUpdateCardView dialog = new AddUpdateCardView(this);
             controller.openAddDialog();
-            dialog.setVisible(true);
-            refreshTable(); // update the main table
+            refreshTable();
         });
 
 
         // Update card entry
         btnEdit.addActionListener(e -> {
             int selectedRow = tblTasks.getSelectedRow();
-
             if (selectedRow == -1) {
                 JOptionPane.showMessageDialog(this, "Please select a card entry to edit");
                 return;
             }
 
             Card selectedCard = currentCards.get(selectedRow);
-
-            AddUpdateCardView dialog = new AddUpdateCardView(this);
-            controller.openEditDialog(selectedCard);
-
-            dialog.setVisible(true);
-            refreshTable();
+            controller.openEditDialog(selectedCard); // pass just the Card
+            refreshTable(); // refresh after dialog closes
         });
 
         // Delete card entry

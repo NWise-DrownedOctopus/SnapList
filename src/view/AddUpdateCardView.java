@@ -116,9 +116,10 @@ public class AddUpdateCardView extends JDialog {
     
     public int getQuantity() {
         try {
-            return Integer.parseInt(txtQuantity.getText().trim());
+            int qty = Integer.parseInt(txtQuantity.getText().trim());
+            return qty > 0 ? qty : 1;
         } catch (NumberFormatException e) {
-            return 0;
+            return 1;
         }
     }
 
