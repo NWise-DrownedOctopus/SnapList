@@ -1,29 +1,66 @@
-// package controller;
+package controller;
 
-// import view.LoginView;
-// import view.RegisterView;
-// import view.CardListView;
+import model.CurrentUser;
+import model.User;
+import service.UserService;
+import view.LoginView;
+import view.RegisterView;
+import view.CardListView;
+import dao.CardDaoImplementation;
+import service.CardService;
 
-// public class LoginController {
+import javax.swing.JOptionPane;
+import java.util.Optional;
 
-//     LoginView loginView;
+public class LoginController {
 
-//     public LoginController(LoginView loginView) {
-//         this.loginView = loginView;
-//     }
+    private final LoginView view;
+    private final UserService userService;
 
-//     // public void onLoginButtonClick() {
-//     //     CardListView taskListView = new CardListView();
-//     //     taskListView.setVisible(true);
+    public LoginController(LoginView view, UserService userService) {
+        this.view = view;
+        this.userService = userService;
+        initController();
+    }
 
-//     //     loginView.dispose();
-//     // }
+    private void initController() {
+        view.getBtnLogin().addActionListener(e -> onLogin());
+        view.getBtnRegister().addActionListener(e -> onRegister());
+    }
 
-//     public void onRegisterButtonClick() {
+    private void onLogin() {
+        String username = view.getUsername();
+        String password = view.getPassword();
 
-//         RegisterView registerView = new RegisterView();
-//         registerView.setVisible(true);
+        if (username.isEmpty() || password.isEmpty()) {
+            view.setStatus("Please enter both username and password");
+            return;
+        }
 
-//         loginView.dispose();
-//     }
-// }
+        Optional<User> result = userService.login(username, password);
+
+        if (result.isEmpty()) {
+            view.setStatus("Invalid username or password");
+            return;
+        }
+
+        // Set the current user session
+        CurrentUser.set(result.get());
+
+        // Launch the main app window
+        CardDaoImplementation cardDao = new CardDaoImplementation();
+        CardService cardService = new CardService(cardDao);
+        CardListController controller = new CardListController(cardService);
+        CardListView cardListView = new CardListView(controller);
+        controller.setView(cardListView);
+
+        cardListView.setVisible(true);
+        view.dispose();
+    }
+
+    private void onRegister() {
+        RegisterView registerView = new RegisterView(userService);
+        registerView.setVisible(true);
+        view.dispose();
+    }
+}

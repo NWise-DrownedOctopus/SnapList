@@ -1,9 +1,10 @@
 package dao;
-import model.*;
+
+import model.User;
+import java.util.Optional;
 
 public interface UserDaoInterface {
     long addUser(User user);
-    //Optional<User> findById(long id);
-    //Optional<User> findByUserName(String name);
-    //long updatePassword(String username);
+    Optional<User> findByUsername(String username);
+    Optional<User> findById(long id);
 }

@@ -1,65 +1,66 @@
-// package view;
+package view;
 
-// import java.awt.BorderLayout;
+import javax.swing.*;
+import java.awt.*;
+import controller.LoginController;
+import service.UserService;
 
-// import javax.swing.BorderFactory;
-// import javax.swing.JButton;
-// import javax.swing.JFrame;
-// import java.awt.GridLayout;
-// import javax.swing.JLabel;
-// import javax.swing.JPanel;
-// import javax.swing.JPasswordField;
-// import javax.swing.JTextField;
+public class LoginView extends JFrame {
 
-// import controller.LoginController;
+    private JTextField txtUsername;
+    private JPasswordField txtPassword;
+    private JButton btnLogin;
+    private JButton btnRegister;
+    private JLabel lblStatus;
 
-// public class LoginView extends JFrame {
+    public LoginView(UserService userService) {
+        setTitle("Snap List — Login");
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
 
-//     JTextField txtUsername;
-//     JPasswordField txtPassword;
-//     JButton btnLogin, btnRegister;
-//     JLabel lblStatus;
+        buildUI();
+        new LoginController(this, userService);
 
-//     LoginController controller;
+        pack();
+        setLocationRelativeTo(null);
+        setResizable(false);
+    }
 
-//     public LoginView() {
+    private void buildUI() {
+        setLayout(new BorderLayout());
 
-//         controller = new LoginController(this);
-//         buildUI();
-//         setTitle("Login");
-//         setDefaultCloseOperation(EXIT_ON_CLOSE);        
-//         pack();
-//         setLocationRelativeTo(null);
-//     }
+        JPanel formPanel = new JPanel(new GridLayout(2, 2, 8, 8));
+        formPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 10, 20));
 
-//     private void buildUI() {
-//         setLayout(new BorderLayout());
-//         JPanel formPanel = new JPanel(new GridLayout(2, 2, 8, 8));
-//         formPanel.setBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12));
+        formPanel.add(new JLabel("Username"));
+        txtUsername = new JTextField(20);
+        formPanel.add(txtUsername);
 
-//         formPanel.add(new JLabel("Username"));
-//         txtUsername = new JTextField(20);
-//         formPanel.add(txtUsername);
+        formPanel.add(new JLabel("Password"));
+        txtPassword = new JPasswordField(20);
+        formPanel.add(txtPassword);
 
-//         formPanel.add(new JLabel("Password"));
-//         txtPassword = new JPasswordField(20);
-//         formPanel.add(txtPassword);
+        JPanel bottomPanel = new JPanel(new BorderLayout(8, 0));
+        bottomPanel.setBorder(BorderFactory.createEmptyBorder(0, 20, 20, 20));
 
-//         // bottom components
-//         JPanel bottomPanel = new JPanel(new BorderLayout());
-//         lblStatus = new JLabel("Enter username and password or register a new account");
+        lblStatus = new JLabel("Enter your credentials to continue");
+        btnLogin = new JButton("Login");
+        btnRegister = new JButton("Register");
 
-//         btnLogin = new JButton("Login");
-//         btnLogin.addActionListener(e -> controller.onLoginButtonClick());
+        JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 0));
+        btnPanel.add(btnRegister);
+        btnPanel.add(btnLogin);
 
-//         btnRegister = new JButton("Register");
-//         btnRegister.addActionListener(e -> controller.onRegisterButtonClick());
+        bottomPanel.add(lblStatus, BorderLayout.WEST);
+        bottomPanel.add(btnPanel, BorderLayout.EAST);
 
-//         bottomPanel.add(lblStatus,BorderLayout.WEST);
-//         bottomPanel.add(btnLogin, BorderLayout.CENTER);
-//         bottomPanel.add(btnRegister, BorderLayout.EAST);
+        add(formPanel, BorderLayout.CENTER);
+        add(bottomPanel, BorderLayout.SOUTH);
+    }
 
-//         add(formPanel, BorderLayout.NORTH);
-//         add(bottomPanel, BorderLayout.CENTER);
-//     }
-// }
+    // Getters for controller
+    public String getUsername() { return txtUsername.getText().trim(); }
+    public String getPassword() { return new String(txtPassword.getPassword()); }
+    public JButton getBtnLogin() { return btnLogin; }
+    public JButton getBtnRegister() { return btnRegister; }
+    public void setStatus(String message) { lblStatus.setText(message); }
+}

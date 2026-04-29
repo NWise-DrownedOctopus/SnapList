@@ -1,34 +1,20 @@
 package model;
 
 public class User {
-    private double id;
-    private String name;
+    private long id;
+    private String username;
+    private String passwordHash;
     private boolean isAdmin;
 
-    public User() {
-    };
+    public User() {}
 
-    public double getId() {
-        return id;
-    }
+    public long getId() { return id; }
+    public String getUsername() { return username; }
+    public String getPasswordHash() { return passwordHash; }
+    public boolean isAdmin() { return isAdmin; }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setId(double id) {
-        this.id = id;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public boolean isAdmin() {
-        return isAdmin;
-    }
-
-    public void setAdmin(boolean isAdmin) {
-        this.isAdmin = isAdmin;
-    }
+    public void setId(long id) { this.id = id; }
+    public void setUsername(String username) { this.username = username; }
+    public void setPasswordHash(String passwordHash) { this.passwordHash = passwordHash; }
+    public void setAdmin(boolean isAdmin) { this.isAdmin = isAdmin; }
 }

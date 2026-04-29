@@ -1,79 +1,72 @@
-// package view;
+package view;
 
-// import javax.swing.BorderFactory;
-// import javax.swing.JButton;
-// import javax.swing.JFrame;
-// import javax.swing.JLabel;
-// import java.awt.BorderLayout;
-// import java.awt.GridLayout;
-// import javax.swing.JPanel;
-// import javax.swing.JPasswordField;
-// import javax.swing.JTextField;
+import javax.swing.*;
+import java.awt.*;
+import controller.RegisterController;
+import service.UserService;
 
-// import controller.RegisterController;
+public class RegisterView extends JFrame {
 
-// public class RegisterView extends JFrame {
+    private JTextField txtUsername;
+    private JPasswordField txtPassword;
+    private JPasswordField txtConfirmPassword;
+    private JButton btnRegister;
+    private JButton btnLogin;
+    private JLabel lblStatus;
 
-//     RegisterController controller;
-    
-//     JTextField txtFullname, txtUsername, txtEmail;
-//     JPasswordField txtPassword, txtConfirmPassword;
-//     JButton btnLogin, btnRegister;
-//     JLabel lblStatus;
+    public RegisterView(UserService userService) {
+        setTitle("Snap List — Register");
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
 
-//     public RegisterView() {
+        buildUI();
+        new RegisterController(this, userService);
 
-//         controller = new RegisterController(this);
+        pack();
+        setLocationRelativeTo(null);
+        setResizable(false);
+    }
 
-//         setTitle("Register");
-//         setDefaultCloseOperation(EXIT_ON_CLOSE);
+    private void buildUI() {
+        setLayout(new BorderLayout());
 
-//         buildUI();
-//         pack();
-//     }
+        JPanel formPanel = new JPanel(new GridLayout(3, 2, 8, 8));
+        formPanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 10, 20));
 
-//     private void buildUI() {
+        formPanel.add(new JLabel("Username"));
+        txtUsername = new JTextField(20);
+        formPanel.add(txtUsername);
 
-//         setLayout(new BorderLayout());
+        formPanel.add(new JLabel("Password"));
+        txtPassword = new JPasswordField(20);
+        formPanel.add(txtPassword);
 
-//         JPanel formPanel = new JPanel(new GridLayout(5, 2, 8, 8));
-//         formPanel.setBorder(BorderFactory.createEmptyBorder(12, 12, 12, 12));
+        formPanel.add(new JLabel("Confirm Password"));
+        txtConfirmPassword = new JPasswordField(20);
+        formPanel.add(txtConfirmPassword);
 
-//         formPanel.add(new JLabel("Full name"));
-//         txtFullname = new JTextField(20);
-//         formPanel.add(txtFullname);
+        JPanel bottomPanel = new JPanel(new BorderLayout(8, 0));
+        bottomPanel.setBorder(BorderFactory.createEmptyBorder(0, 20, 20, 20));
 
-//         formPanel.add(new JLabel("Username"));
-//         txtUsername = new JTextField(20);
-//         formPanel.add(txtUsername);
+        lblStatus = new JLabel("Create a new account");
+        btnRegister = new JButton("Register");
+        btnLogin = new JButton("Back to Login");
 
-//         formPanel.add(new JLabel("Email"));
-//         txtEmail = new JTextField(20);
-//         formPanel.add(txtEmail);
+        JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 0));
+        btnPanel.add(btnLogin);
+        btnPanel.add(btnRegister);
 
-//         formPanel.add(new JLabel("Password"));
-//         txtPassword = new JPasswordField(20);
-//         formPanel.add(txtPassword);
+        bottomPanel.add(lblStatus, BorderLayout.WEST);
+        bottomPanel.add(btnPanel, BorderLayout.EAST);
 
-//         formPanel.add(new JLabel("Confirm Password"));
-//         txtConfirmPassword = new JPasswordField(20);
-//         formPanel.add(txtConfirmPassword);
+        add(formPanel, BorderLayout.CENTER);
+        add(bottomPanel, BorderLayout.SOUTH);
+    }
 
-//         JPanel bottomPanel = new JPanel(new BorderLayout());
-
-//         lblStatus = new JLabel("Enter username and password or register a new account");
-
-//         btnLogin = new JButton("Login");
-//         btnLogin.addActionListener(e -> controller.onLoginButtonClick());
-
-//         btnRegister = new JButton("Register");
-//         btnRegister.addActionListener(e -> controller.onRegisterButtonClick());
-
-//         bottomPanel.add(lblStatus, BorderLayout.WEST);
-//         bottomPanel.add(btnLogin, BorderLayout.CENTER);
-//         bottomPanel.add(btnRegister, BorderLayout.EAST);
-
-//         add(formPanel, BorderLayout.NORTH);
-//         add(bottomPanel, BorderLayout.CENTER);
-//     }
-// }
+    // Getters for controller
+    public String getUsername() { return txtUsername.getText().trim(); }
+    public String getPassword() { return new String(txtPassword.getPassword()); }
+    public String getConfirmPassword() { return new String(txtConfirmPassword.getPassword()); }
+    public JButton getBtnRegister() { return btnRegister; }
+    public JButton getBtnLogin() { return btnLogin; }
+    public void setStatus(String message) { lblStatus.setText(message); }
+}

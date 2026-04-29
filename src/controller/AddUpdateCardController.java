@@ -40,11 +40,13 @@ public class AddUpdateCardController {
             Condition condition = view.getSelectedCondition();
             int quantity = view.getQuantity();
 
+            long userId = model.CurrentUser.get().getId();
+
             if (editingCard != null) {
                 service.updateCard(editingCard, name, set, language, condition, quantity);
                 JOptionPane.showMessageDialog(view, "Card updated successfully!");
             } else {
-                service.addCard(name, set, language, condition, quantity, 2L);
+                service.addCard(name, set, language, condition, quantity, userId);
                 JOptionPane.showMessageDialog(view, "Card added successfully!");
             }
 

@@ -1,19 +1,13 @@
-import controller.CardListController;
-import dao.CardDaoImplementation;
-import service.CardService;
-import view.CardListView;
+import dao.UserDaoImplementation;
+import service.UserService;
+import view.LoginView;
 
 public class AppUI {
-
     public static void main(String[] args) {
-        CardDaoImplementation dao = new CardDaoImplementation();
-        CardService service = new CardService(dao);
+        UserDaoImplementation userDao = new UserDaoImplementation();
+        UserService userService = new UserService(userDao);
 
-        CardListController controller = new CardListController(service);
-        CardListView view = new CardListView(controller);
-
-        controller.setView(view);
-
-        view.setVisible(true);
-    }    
+        LoginView loginView = new LoginView(userService);
+        loginView.setVisible(true);
+    }
 }
