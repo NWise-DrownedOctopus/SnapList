@@ -8,14 +8,16 @@ public abstract class Card {
     private String set;
     private Language language;
     private Condition condition;
+    private Long userId;
 
-    public Card(Long id, String name, Game game, String set, Language language, Condition condition) {
+    public Card(Long id, String name, Game game, String set, Language language, Condition condition, Long userId) {
         this.id = id;
         this.name = name;
         this.game = game;
         this.set = set;
         this.language = language;
         this.condition = condition;
+        this.userId = userId;
     }
 
     // Getters
@@ -41,6 +43,10 @@ public abstract class Card {
 
     public Condition getCondition() {
         return condition;
+    }
+
+    public Long getUserId() {
+        return userId;
     }
 
     // Setters
@@ -85,5 +91,12 @@ public abstract class Card {
             throw new IllegalArgumentException("Condition must be selected");
         }
         this.condition = condition;
+    }
+
+    public void setUserId(Long userId) {
+        if(userId == null) {
+            throw new IllegalArgumentException("User Id must be selected");
+        }
+        this.userId = userId;
     }
 }

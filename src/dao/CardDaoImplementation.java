@@ -1,56 +1,152 @@
 package dao;
 
+import java.sql.*;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
-import model.Card;
-import model.Game;
-import model.Language;
-import model.Condition;
-import model.Mtg_Card;
-import model.MTG_Printing;
+import model.*;
 
 public class CardDaoImplementation {
-    private final List<Card> cardList = new ArrayList<>();
-    private long nextID = 1;
-
-    public CardDaoImplementation() {
-        seedCards();
-    }
-
-    private void seedCards() {
-        Card card1 = new Mtg_Card(null, "Harmonized Crescendo", Game.MTG, "Lorwyn Eclipsed", Language.ENGLISH,
-                Condition.LP, MTG_Printing.extended_art);
-        insertCard(card1);
-    }
 
     public List<Card> findAll() {
-        return Collections.unmodifiableList(cardList);
+        List<Card> cards = new ArrayList<>();
+        String sql = "SELECT * FROM cards";
+
+        try (Connection conn = DbConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                cards.add(mapRow(rs));
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to fetch cards: " + e.getMessage(), e);
+        }
+
+        return cards;
+    }
+
+    public List<Card> findAllByUser(long userId) {
+        List<Card> cards = new ArrayList<>();
+        String sql = "SELECT c.* FROM cards c JOIN users u ON c.user_id = u.id " +
+                     "WHERE c.user_id = ? ORDER BY c.`condition`";
+
+        try (Connection conn = DbConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setLong(1, userId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    cards.add(mapRow(rs));
+                }
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to fetch cards for user: " + e.getMessage(), e);
+        }
+
+        return cards;
     }
 
     public synchronized long insertCard(Card card) {
-        long assignedId = nextID++;
-        card.setId(assignedId);
-        cardList.add(card);
-        return assignedId;
+        String sql = "INSERT INTO cards (user_id, name, game, set_name, language, `condition`, quantity) " +
+                     "VALUES (?, ?, ?, ?, ?, ?, ?)";
+
+        try (Connection conn = DbConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+
+            ps.setLong(1, card.getUserId());
+            ps.setString(2, card.getName());
+            ps.setString(3, card.getGame().name());
+            ps.setString(4, card.getSet());
+            ps.setString(5, card.getLanguage().name());
+            ps.setString(6, card.getCondition().name());
+            ps.setInt(7, 1);
+
+            ps.executeUpdate();
+
+            try (ResultSet keys = ps.getGeneratedKeys()) {
+                if (keys.next()) {
+                    long assignedId = keys.getLong(1);
+                    card.setId(assignedId);
+                    return assignedId;
+                }
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to insert card: " + e.getMessage(), e);
+        }
+
+        throw new RuntimeException("Insert failed — no ID returned");
     }
 
     public Card findById(long id) {
-        return cardList.stream().filter(c -> c.getId() == id).findFirst().orElse(null);
+        String sql = "SELECT * FROM cards WHERE id = ?";
+
+        try (Connection conn = DbConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setLong(1, id);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    return mapRow(rs);
+                }
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to find card: " + e.getMessage(), e);
+        }
+
+        return null;
     }
 
     public boolean delete(long id) {
-        return cardList.removeIf(c -> c.getId() == id);
+        String sql = "DELETE FROM cards WHERE id = ?";
+
+        try (Connection conn = DbConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setLong(1, id);
+            return ps.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to delete card: " + e.getMessage(), e);
+        }
     }
 
-    public boolean update(Card updatedCard) {
-        for (int i = 0; i < cardList.size(); i++) {
-            if (cardList.get(i).getId() == updatedCard.getId()) {
-                cardList.set(i, updatedCard);
-                return true;
-            }
+    public boolean update(Card card) {
+        String sql = "UPDATE cards SET name = ?, set_name = ?, language = ?, " +
+                     "`condition` = ?, quantity = ? WHERE id = ?";
+
+        try (Connection conn = DbConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, card.getName());
+            ps.setString(2, card.getSet());
+            ps.setString(3, card.getLanguage().name());
+            ps.setString(4, card.getCondition().name());
+            ps.setInt(5, 1);
+            ps.setLong(6, card.getId());
+
+            return ps.executeUpdate() > 0;
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to update card: " + e.getMessage(), e);
         }
-        return false;
+    }
+
+    private Card mapRow(ResultSet rs) throws SQLException {
+        Long id = rs.getLong("id");
+        long userId = rs.getLong("user_id");
+        String name = rs.getString("name");
+        Game game = Game.valueOf(rs.getString("game"));
+        String set = rs.getString("set_name");
+        Language language = Language.valueOf(rs.getString("language"));
+        Condition condition = Condition.valueOf(rs.getString("condition"));
+
+        Mtg_Card card = new Mtg_Card(id, name, game, set, language, condition, MTG_Printing.normal, userId);
+        card.setUserId(userId);
+        return card;
     }
 }

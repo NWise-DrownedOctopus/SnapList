@@ -44,7 +44,7 @@ public class AddUpdateCardController {
                 service.updateCard(editingCard, name, set, language, condition, quantity);
                 JOptionPane.showMessageDialog(view, "Card updated successfully!");
             } else {
-                service.addCard(name, set, language, condition, quantity);
+                service.addCard(name, set, language, condition, quantity, 2L);
                 JOptionPane.showMessageDialog(view, "Card added successfully!");
             }
 

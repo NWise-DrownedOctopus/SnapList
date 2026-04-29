@@ -21,17 +21,15 @@ public class CardService {
         return dao.findAll();
     }
 
-    public void addCard(String name, String set, Language language, Condition condition, int quantity) {
+    public List<Card> getAllCardsByUser(long userId) {
+        return dao.findAllByUser(userId);
+    }
+
+    public void addCard(String name, String set, Language language, Condition condition, int quantity, long userId) {
         validateCard(name, quantity);
 
-        Card newCard = new Mtg_Card(
-                null,
-                name,
-                Game.MTG,
-                set,
-                language,
-                condition,
-                MTG_Printing.normal);
+        Mtg_Card newCard = new Mtg_Card(null, name, Game.MTG, set, language, condition, MTG_Printing.normal, userId);
+        newCard.setUserId(userId);
 
         dao.insertCard(newCard);
     }
@@ -51,12 +49,10 @@ public class CardService {
         return dao.delete(id);
     }
 
-    // 🔹 Business rules live here now
     private void validateCard(String name, int quantity) {
         if (name == null || name.trim().isEmpty()) {
             throw new IllegalArgumentException("Name cannot be empty");
         }
-
         if (quantity < 1) {
             throw new IllegalArgumentException("Quantity must be at least 1");
         }
