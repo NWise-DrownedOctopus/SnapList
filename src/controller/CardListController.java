@@ -20,7 +20,11 @@ public class CardListController {
     }
 
     public List<Card> getAllCards() {
-        return service.getAllCards();
+        if (model.CurrentUser.isAdmin()) {
+            return service.getAllCards();
+        } else {
+            return service.getAllCardsByUser(model.CurrentUser.get().getId());
+        }
     }
 
     public void deleteCard(long id) {
