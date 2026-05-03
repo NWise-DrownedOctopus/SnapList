@@ -14,7 +14,7 @@ public class CardListView extends JFrame {
             new String[] { "Any", "MTG", "Pokemon", "UnionArena", "Lorcana", "One Piece" });
     private JComboBox<String> cmbLanguage = new JComboBox<>(
             new String[] { "Any", "English", "Japanese", "Korean", "Spanish", "Russian", "German", "French" });
-    // Change these four lines at the top of the class
+
     private JToggleButton btnNM = new JToggleButton("NM");
     private JToggleButton btnLP = new JToggleButton("LP");
     private JToggleButton btnMP = new JToggleButton("MP");
@@ -28,8 +28,8 @@ public class CardListView extends JFrame {
     private JButton btnEdit = new JButton("Edit");
     private JButton btnDelete = new JButton("Delete");
     private JButton btnSubmit = new JButton("Submit");
+    private JButton btnLogout = new JButton("Logout");
 
-    // Optional: dynamic labels for offers
     private JLabel lblQuantity = new JLabel("Quantity: 0");
     private JLabel lblMarketValue = new JLabel("Market Value: $0.00");
     private JLabel lblStoreCredit = new JLabel("Store Credit Offer: $0.00");
@@ -47,24 +47,22 @@ public class CardListView extends JFrame {
         cmbLanguage.setSelectedItem("Any");
         cmbGame.setSelectedItem("Any");
 
-        // Table model
         DefaultTableModel tableModel = new DefaultTableModel(
                 new Object[] { "#", "Shop Qtry", "Game", "Product Name", "Set", "Condition", "Printing", "Lang.",
                         "Qty.", "Market Price" },
                 0);
         tblTasks = new JTable(tableModel);
 
-        // Adjust column widths
-        tblTasks.getColumnModel().getColumn(0).setPreferredWidth(30); // #
-        tblTasks.getColumnModel().getColumn(1).setPreferredWidth(60); // Shop Qtry
-        tblTasks.getColumnModel().getColumn(2).setPreferredWidth(100); // Game
-        tblTasks.getColumnModel().getColumn(3).setPreferredWidth(250); // Product Name
-        tblTasks.getColumnModel().getColumn(4).setPreferredWidth(200); // Set
-        tblTasks.getColumnModel().getColumn(5).setPreferredWidth(60); // Condition
-        tblTasks.getColumnModel().getColumn(6).setPreferredWidth(80); // Printing
-        tblTasks.getColumnModel().getColumn(7).setPreferredWidth(80); // Lang
-        tblTasks.getColumnModel().getColumn(8).setPreferredWidth(50); // Qty.
-        tblTasks.getColumnModel().getColumn(9).setPreferredWidth(100); // Market Price
+        tblTasks.getColumnModel().getColumn(0).setPreferredWidth(30);
+        tblTasks.getColumnModel().getColumn(1).setPreferredWidth(60);
+        tblTasks.getColumnModel().getColumn(2).setPreferredWidth(100);
+        tblTasks.getColumnModel().getColumn(3).setPreferredWidth(250);
+        tblTasks.getColumnModel().getColumn(4).setPreferredWidth(200);
+        tblTasks.getColumnModel().getColumn(5).setPreferredWidth(60);
+        tblTasks.getColumnModel().getColumn(6).setPreferredWidth(80);
+        tblTasks.getColumnModel().getColumn(7).setPreferredWidth(80);
+        tblTasks.getColumnModel().getColumn(8).setPreferredWidth(50);
+        tblTasks.getColumnModel().getColumn(9).setPreferredWidth(100);
 
         buildUI();
         addActionListeners();
@@ -96,8 +94,16 @@ public class CardListView extends JFrame {
         filterPanel.add(btnHP);
         filterPanel.add(btnDG);
 
+        // Logout button pinned to the right of the top bar
+        JPanel topBar = new JPanel(new BorderLayout());
+        topBar.add(filterPanel, BorderLayout.CENTER);
+
+        JPanel logoutPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        logoutPanel.add(btnLogout);
+        topBar.add(logoutPanel, BorderLayout.EAST);
+
         JPanel topPanel = new JPanel(new BorderLayout());
-        topPanel.add(filterPanel, BorderLayout.NORTH);
+        topPanel.add(topBar, BorderLayout.NORTH);
         topPanel.add(lblLoading, BorderLayout.SOUTH);
         add(topPanel, BorderLayout.NORTH);
 
@@ -107,7 +113,6 @@ public class CardListView extends JFrame {
         add(tableScroll, BorderLayout.CENTER);
 
         // ===== Bottom Panels =====
-        // Left: action buttons
         JPanel actionPanel = new JPanel();
         actionPanel.add(btnAdd);
         actionPanel.add(Box.createHorizontalStrut(10));
@@ -115,7 +120,6 @@ public class CardListView extends JFrame {
         actionPanel.add(Box.createHorizontalStrut(10));
         actionPanel.add(btnDelete);
 
-        // Right: offer info
         JPanel offerPanel = new JPanel();
         offerPanel.setLayout(new BoxLayout(offerPanel, BoxLayout.Y_AXIS));
         offerPanel.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 0));
@@ -129,7 +133,6 @@ public class CardListView extends JFrame {
         offerPanel.add(Box.createVerticalStrut(5));
         offerPanel.add(btnSubmit);
 
-        // Combine into one bottom container
         JPanel bottomContainer = new JPanel(new BorderLayout());
         bottomContainer.setBorder(BorderFactory.createEmptyBorder(10, 15, 10, 15));
         bottomContainer.add(actionPanel, BorderLayout.WEST);
@@ -137,48 +140,6 @@ public class CardListView extends JFrame {
 
         add(bottomContainer, BorderLayout.SOUTH);
     }
-    // TICKET:: Shop quantity would need to hook up to some sort of internal storage
-    // system that would allow the user to manage their card inventory
-    // For now I have it at 0, but ideally I could set up an inventory system, and
-    // then allow this to pull data from that to manage that state.
-
-    // TICKET:: Printing is still not fully implemented, because it will relly on
-    // the db to pull print information that is avalible for a card, for now
-    // it has a default (normal) print set as a placeholder
-
-    // TICKET:: Market price should be updated and stored locally, but the process
-    // of pulling that data from online and chaching isn't implemented, so $0 is a
-    // placeholder for now
-
-    // TICKET:: QTY should be updated as the user adds entries to the table, they
-    // should be able to specify how many of the card should be added to the list,
-    // but without having multiple entries
-    // in the table
-
-    // Updates the view of the table to reflect the data from the dao
-    // public void refreshTable() {
-    // DefaultTableModel model = (DefaultTableModel) tblTasks.getModel();
-    // model.setRowCount(0); // clear current rows
-
-    // // Stores acurate list of cards that are stored in the DAO
-    // currentCards = controller.getAllCards();
-
-    // int counter = 1;
-    // for (Card card : currentCards) {
-    // model.addRow(new Object[] {
-    // counter++,
-    // 0, // placeholder shop quantity
-    // card.getGame(),
-    // card.getName(),
-    // card.getSet(),
-    // card.getCondition(),
-    // "Normal", // placeholder printing
-    // card.getLanguage(),
-    // 1, // placeholder quantity
-    // 0.0 // placeholder market price
-    // });
-    // }
-    // }
 
     private void addActionListeners() {
 
@@ -221,9 +182,11 @@ public class CardListView extends JFrame {
         });
 
         btnSubmit.addActionListener(e -> controller.onSubmitButtonClick());
+
+        // ── Logout ───────────────────────────────────────────────
+        btnLogout.addActionListener(e -> controller.logout());
     }
 
-    // Optional: methods to update dynamic offer labels
     public void updateOfferLabels(int quantity, double market, double storeCredit, double cash) {
         lblQuantity.setText("Quantity: " + quantity);
         lblMarketValue.setText(String.format("Market Value: $%.2f", market));
@@ -239,7 +202,6 @@ public class CardListView extends JFrame {
 
             @Override
             protected java.util.List<Card> doInBackground() throws Exception {
-                // DB call happens on background thread
                 Thread.sleep(1500);
                 return controller.getAllCards();
             }
@@ -291,20 +253,16 @@ public class CardListView extends JFrame {
         String selectedLanguage = (String) cmbLanguage.getSelectedItem();
         String selectedCondition = getSelectedCondition();
 
-        // Filter the current card list
         java.util.List<Card> filtered = currentCards.stream()
                 .filter(card -> {
-                    // Game filter
                     if (!"Any".equals(selectedGame)) {
                         if (!card.getGame().name().equalsIgnoreCase(selectedGame))
                             return false;
                     }
-                    // Language filter
                     if (!"Any".equals(selectedLanguage)) {
                         if (!card.getLanguage().name().equalsIgnoreCase(selectedLanguage))
                             return false;
                     }
-                    // Condition filter
                     if (selectedCondition != null) {
                         if (!card.getCondition().name().equals(selectedCondition))
                             return false;
@@ -313,7 +271,6 @@ public class CardListView extends JFrame {
                 })
                 .collect(java.util.stream.Collectors.toList());
 
-        // Rebuild the table with filtered results
         DefaultTableModel model = (DefaultTableModel) tblTasks.getModel();
         model.setRowCount(0);
 
@@ -335,18 +292,11 @@ public class CardListView extends JFrame {
     }
 
     private String getSelectedCondition() {
-        // Check which condition button is toggled
-        // We track this with a selected state on the buttons
-        if (btnNM.isSelected())
-            return "NM";
-        if (btnLP.isSelected())
-            return "LP";
-        if (btnMP.isSelected())
-            return "MP";
-        if (btnHP.isSelected())
-            return "HP";
-        if (btnDG.isSelected())
-            return "DG";
-        return null; // no condition filter active
+        if (btnNM.isSelected()) return "NM";
+        if (btnLP.isSelected()) return "LP";
+        if (btnMP.isSelected()) return "MP";
+        if (btnHP.isSelected()) return "HP";
+        if (btnDG.isSelected()) return "DG";
+        return null;
     }
 }

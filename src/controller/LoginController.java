@@ -50,7 +50,7 @@ public class LoginController {
         // Launch the main app window
         CardDaoImplementation cardDao = new CardDaoImplementation();
         CardService cardService = new CardService(cardDao);
-        CardListController controller = new CardListController(cardService);
+        CardListController controller = new CardListController(cardService, userService);
         CardListView cardListView = new CardListView(controller);
         controller.setView(cardListView);
 
