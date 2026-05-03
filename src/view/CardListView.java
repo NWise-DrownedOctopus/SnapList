@@ -29,6 +29,7 @@ public class CardListView extends JFrame {
     private JButton btnEdit = new JButton("Edit");
     private JButton btnDelete = new JButton("Delete");
     private JButton btnSubmit = new JButton("Submit");
+    private JButton btnLogout = new JButton("Logout");
 
     private JLabel lblQuantity = new JLabel("Quantity: 0");
     private JLabel lblMarketValue = new JLabel("Market Value: $0.00");
@@ -78,6 +79,7 @@ public class CardListView extends JFrame {
     private void buildUI() {
         setLayout(new BorderLayout(10, 10));
 
+        // ===== Top Filter Panel =====
         JPanel filterPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         filterPanel.add(new JLabel("Game"));
         filterPanel.add(cmbGame);
@@ -93,15 +95,25 @@ public class CardListView extends JFrame {
         filterPanel.add(btnHP);
         filterPanel.add(btnDG);
 
+        // Logout button pinned to the right of the top bar
+        JPanel topBar = new JPanel(new BorderLayout());
+        topBar.add(filterPanel, BorderLayout.CENTER);
+
+        JPanel logoutPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        logoutPanel.add(btnLogout);
+        topBar.add(logoutPanel, BorderLayout.EAST);
+
         JPanel topPanel = new JPanel(new BorderLayout());
-        topPanel.add(filterPanel, BorderLayout.NORTH);
+        topPanel.add(topBar, BorderLayout.NORTH);
         topPanel.add(lblLoading, BorderLayout.SOUTH);
         add(topPanel, BorderLayout.NORTH);
 
+        // ===== Center Table =====
         JScrollPane tableScroll = new JScrollPane(tblTasks);
         tableScroll.setPreferredSize(new Dimension(600, 300));
         add(tableScroll, BorderLayout.CENTER);
 
+        // ===== Bottom Panels =====
         JPanel actionPanel = new JPanel();
         actionPanel.add(btnAdd);
         actionPanel.add(Box.createHorizontalStrut(10));
@@ -173,6 +185,9 @@ public class CardListView extends JFrame {
         });
 
         btnSubmit.addActionListener(e -> controller.onSubmitButtonClick());
+
+        // ── Logout ───────────────────────────────────────────────
+        btnLogout.addActionListener(e -> controller.logout());
     }
 
     public void updateOfferLabels(int quantity, double market, double storeCredit, double cash) {
@@ -198,7 +213,7 @@ public class CardListView extends JFrame {
             protected void done() {
                 try {
                     currentCards = get();
-                    applyFilters(); // applyFilters now also updates filteredCards
+                    applyFilters(); // applyFilters updates filteredCards and rebuilds the table
 
                 } catch (Exception e) {
                     JOptionPane.showMessageDialog(
@@ -255,7 +270,7 @@ public class CardListView extends JFrame {
                     card.getCondition(),
                     "Normal",
                     card.getLanguage(),
-                    card.getQuantity(),
+                    card.getQuantity(), // real quantity from model
                     0.0
             });
         }
