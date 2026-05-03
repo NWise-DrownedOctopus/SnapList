@@ -4,7 +4,7 @@ import javax.swing.JOptionPane;
 
 import model.CurrentUser;
 import service.UserService;
-// import view.LoginView;
+import view.LoginView;
 import view.RegisterView;
 
 public class RegisterController {
@@ -53,8 +53,8 @@ public class RegisterController {
     }
 
     private void onBackToLogin() {
-        // LoginView loginView = new LoginView(userService);
-        // loginView.setVisible(true);
+        LoginView loginView = new LoginView(userService);
+        loginView.setVisible(true);
         view.dispose();
     }
 }
