@@ -28,8 +28,7 @@ public class CardService {
     public void addCard(String name, String set, Language language, Condition condition, int quantity, long userId) {
         validateCard(name, quantity);
 
-        Mtg_Card newCard = new Mtg_Card(null, name, Game.MTG, set, language, condition, MTG_Printing.normal, userId);
-        newCard.setUserId(userId);
+        Mtg_Card newCard = new Mtg_Card(null, name, Game.MTG, set, language, condition, MTG_Printing.normal, userId, quantity);
 
         dao.insertCard(newCard);
     }
@@ -41,6 +40,7 @@ public class CardService {
         card.setSet(set);
         card.setLanguage(language);
         card.setCondition(condition);
+        card.setQuantity(quantity); // now actually updates quantity
 
         dao.update(card);
     }

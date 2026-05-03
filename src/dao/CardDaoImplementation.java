@@ -62,7 +62,7 @@ public class CardDaoImplementation {
             ps.setString(4, card.getSet());
             ps.setString(5, card.getLanguage().name());
             ps.setString(6, card.getCondition().name());
-            ps.setInt(7, 1);
+            ps.setInt(7, card.getQuantity()); // use actual quantity
 
             ps.executeUpdate();
 
@@ -126,7 +126,7 @@ public class CardDaoImplementation {
             ps.setString(2, card.getSet());
             ps.setString(3, card.getLanguage().name());
             ps.setString(4, card.getCondition().name());
-            ps.setInt(5, 1);
+            ps.setInt(5, card.getQuantity()); // use actual quantity
             ps.setLong(6, card.getId());
 
             return ps.executeUpdate() > 0;
@@ -144,9 +144,8 @@ public class CardDaoImplementation {
         String set = rs.getString("set_name");
         Language language = Language.valueOf(rs.getString("language"));
         Condition condition = Condition.valueOf(rs.getString("condition"));
+        int quantity = rs.getInt("quantity"); // read quantity from DB
 
-        Mtg_Card card = new Mtg_Card(id, name, game, set, language, condition, MTG_Printing.normal, userId);
-        card.setUserId(userId);
-        return card;
+        return new Mtg_Card(id, name, game, set, language, condition, MTG_Printing.normal, userId, quantity);
     }
 }

@@ -1,7 +1,6 @@
 package model;
 
 public abstract class Card {
-    // fields
     private Long id;
     private String name;
     private Game game;
@@ -9,8 +8,9 @@ public abstract class Card {
     private Language language;
     private Condition condition;
     private Long userId;
+    private int quantity;
 
-    public Card(Long id, String name, Game game, String set, Language language, Condition condition, Long userId) {
+    public Card(Long id, String name, Game game, String set, Language language, Condition condition, Long userId, int quantity) {
         this.id = id;
         this.name = name;
         this.game = game;
@@ -18,39 +18,20 @@ public abstract class Card {
         this.language = language;
         this.condition = condition;
         this.userId = userId;
+        this.quantity = quantity;
     }
 
     // Getters
-    public Long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public Game getGame() {
-        return game;
-    }
-
-    public String getSet() {
-        return set;
-    }
-
-    public Language getLanguage() {
-        return language;
-    }
-
-    public Condition getCondition() {
-        return condition;
-    }
-
-    public Long getUserId() {
-        return userId;
-    }
+    public Long getId() { return id; }
+    public String getName() { return name; }
+    public Game getGame() { return game; }
+    public String getSet() { return set; }
+    public Language getLanguage() { return language; }
+    public Condition getCondition() { return condition; }
+    public Long getUserId() { return userId; }
+    public int getQuantity() { return quantity; }
 
     // Setters
-
     public void setId(Long id) {
         if (id == null || id < 0) {
             throw new IllegalArgumentException("ID must be non-null and non-negative");
@@ -94,9 +75,16 @@ public abstract class Card {
     }
 
     public void setUserId(Long userId) {
-        if(userId == null) {
+        if (userId == null) {
             throw new IllegalArgumentException("User Id must be selected");
         }
         this.userId = userId;
+    }
+
+    public void setQuantity(int quantity) {
+        if (quantity < 1) {
+            throw new IllegalArgumentException("Quantity must be at least 1");
+        }
+        this.quantity = quantity;
     }
 }

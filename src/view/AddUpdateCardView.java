@@ -113,7 +113,7 @@ public class AddUpdateCardView extends JDialog {
     // ---- Getters for controller ----
     public String getCardName() { return txtName.getText().trim(); }
     public String getSelectedSet() { return (String) cmbSet.getSelectedItem(); }
-    
+
     public int getQuantity() {
         try {
             int qty = Integer.parseInt(txtQuantity.getText().trim());
@@ -140,6 +140,7 @@ public class AddUpdateCardView extends JDialog {
         txtName.setText(card.getName());
         cmbSet.setSelectedItem(card.getSet());
         cmbLanguage.setSelectedItem(card.getLanguage());
+        txtQuantity.setText(String.valueOf(card.getQuantity()));
         switch (card.getCondition()) {
             case NM -> btnNM.setSelected(true);
             case LP -> btnLP.setSelected(true);

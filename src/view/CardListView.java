@@ -23,12 +23,12 @@ public class CardListView extends JFrame {
 
     private JTable tblTasks;
     private java.util.List<Card> currentCards = new java.util.ArrayList<>();
+    private java.util.List<Card> filteredCards = new java.util.ArrayList<>(); // tracks what's visible in the table
 
     private JButton btnAdd = new JButton("Add");
     private JButton btnEdit = new JButton("Edit");
     private JButton btnDelete = new JButton("Delete");
     private JButton btnSubmit = new JButton("Submit");
-    private JButton btnLogout = new JButton("Logout");
 
     private JLabel lblQuantity = new JLabel("Quantity: 0");
     private JLabel lblMarketValue = new JLabel("Market Value: $0.00");
@@ -78,7 +78,6 @@ public class CardListView extends JFrame {
     private void buildUI() {
         setLayout(new BorderLayout(10, 10));
 
-        // ===== Top Filter Panel =====
         JPanel filterPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         filterPanel.add(new JLabel("Game"));
         filterPanel.add(cmbGame);
@@ -94,25 +93,15 @@ public class CardListView extends JFrame {
         filterPanel.add(btnHP);
         filterPanel.add(btnDG);
 
-        // Logout button pinned to the right of the top bar
-        JPanel topBar = new JPanel(new BorderLayout());
-        topBar.add(filterPanel, BorderLayout.CENTER);
-
-        JPanel logoutPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        logoutPanel.add(btnLogout);
-        topBar.add(logoutPanel, BorderLayout.EAST);
-
         JPanel topPanel = new JPanel(new BorderLayout());
-        topPanel.add(topBar, BorderLayout.NORTH);
+        topPanel.add(filterPanel, BorderLayout.NORTH);
         topPanel.add(lblLoading, BorderLayout.SOUTH);
         add(topPanel, BorderLayout.NORTH);
 
-        // ===== Center Table =====
         JScrollPane tableScroll = new JScrollPane(tblTasks);
         tableScroll.setPreferredSize(new Dimension(600, 300));
         add(tableScroll, BorderLayout.CENTER);
 
-        // ===== Bottom Panels =====
         JPanel actionPanel = new JPanel();
         actionPanel.add(btnAdd);
         actionPanel.add(Box.createHorizontalStrut(10));
@@ -165,7 +154,8 @@ public class CardListView extends JFrame {
                 JOptionPane.showMessageDialog(this, "Please select a card entry to edit");
                 return;
             }
-            Card selectedCard = currentCards.get(selectedRow);
+            // Use filteredCards so the correct card is selected even when filters are active
+            Card selectedCard = filteredCards.get(selectedRow);
             controller.openEditDialog(selectedCard);
             refreshTable();
         });
@@ -176,15 +166,13 @@ public class CardListView extends JFrame {
                 JOptionPane.showMessageDialog(this, "Please select a card entry to delete");
                 return;
             }
-            Card selectedCard = currentCards.get(selectedRow);
+            // Use filteredCards so the correct card is deleted even when filters are active
+            Card selectedCard = filteredCards.get(selectedRow);
             controller.deleteCard(selectedCard.getId());
             refreshTable();
         });
 
         btnSubmit.addActionListener(e -> controller.onSubmitButtonClick());
-
-        // ── Logout ───────────────────────────────────────────────
-        btnLogout.addActionListener(e -> controller.logout());
     }
 
     public void updateOfferLabels(int quantity, double market, double storeCredit, double cash) {
@@ -210,27 +198,7 @@ public class CardListView extends JFrame {
             protected void done() {
                 try {
                     currentCards = get();
-
-                    DefaultTableModel model = (DefaultTableModel) tblTasks.getModel();
-                    model.setRowCount(0);
-
-                    int counter = 1;
-                    for (Card card : currentCards) {
-                        model.addRow(new Object[] {
-                                counter++,
-                                0,
-                                card.getGame(),
-                                card.getName(),
-                                card.getSet(),
-                                card.getCondition(),
-                                "Normal",
-                                card.getLanguage(),
-                                1,
-                                0.0
-                        });
-                    }
-
-                    applyFilters();
+                    applyFilters(); // applyFilters now also updates filteredCards
 
                 } catch (Exception e) {
                     JOptionPane.showMessageDialog(
@@ -253,7 +221,8 @@ public class CardListView extends JFrame {
         String selectedLanguage = (String) cmbLanguage.getSelectedItem();
         String selectedCondition = getSelectedCondition();
 
-        java.util.List<Card> filtered = currentCards.stream()
+        // Build filtered list and store it in filteredCards
+        filteredCards = currentCards.stream()
                 .filter(card -> {
                     if (!"Any".equals(selectedGame)) {
                         if (!card.getGame().name().equalsIgnoreCase(selectedGame))
@@ -271,11 +240,12 @@ public class CardListView extends JFrame {
                 })
                 .collect(java.util.stream.Collectors.toList());
 
+        // Rebuild table from filteredCards
         DefaultTableModel model = (DefaultTableModel) tblTasks.getModel();
         model.setRowCount(0);
 
         int counter = 1;
-        for (Card card : filtered) {
+        for (Card card : filteredCards) {
             model.addRow(new Object[] {
                     counter++,
                     0,
@@ -285,7 +255,7 @@ public class CardListView extends JFrame {
                     card.getCondition(),
                     "Normal",
                     card.getLanguage(),
-                    1,
+                    card.getQuantity(),
                     0.0
             });
         }
